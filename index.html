@@ -1931,27 +1931,28 @@
 </footer>
 
 <!-- ====CHATBOT==== -->
-<button type="button" data-chat-launcher aria-expanded="false" aria-controls="siu-chat" class="chat-launcher" aria-label="Open the SIU Assistant">
+<button type="button" data-chat-launcher data-muse-state="idle" aria-expanded="false" aria-controls="siu-chat" class="chat-launcher" aria-label="Open Muse, your SIU guide">
+  <span class="muse-launcher-label" aria-hidden="true">Muse <span>✨</span></span>
   <span data-icon-open class="relative">
-    <svg class="h-7 w-7"><use href="#i-chat" /></svg>
+    <span data-muse-slot="launcher" class="muse-launcher-bot"></span>
     <span class="absolute -top-1 -right-1 h-3 w-3 animate-pulse-ring rounded-full bg-gold-400"></span>
   </span>
   <span data-icon-close class="hidden"><svg class="h-7 w-7"><use href="#i-close" /></svg></span>
 </button>
 
-<section data-chat-panel id="siu-chat" class="chat-panel" data-i18n-skip role="dialog" aria-label="SIU Assistant">
+<section data-chat-panel id="siu-chat" class="chat-panel" data-i18n-skip data-muse-state="idle" role="dialog" aria-label="Muse — SIU Assistant">
   <div data-chat-canvas class="chat-canvas absolute inset-0 z-0 pointer-events-none"></div>
 
   <header class="flex items-center gap-3 bg-gradient-to-b from-brand-700 to-brand-900 px-5 py-4 text-white border-b border-white/10 relative z-10">
-    <span class="bot-avatar !bg-white/20">
-      <svg class="h-5 w-5"><use href="#i-chat" /></svg>
-    </span>
+    <button type="button" data-muse-button class="bot-avatar muse-header" aria-label="Say hello to Muse" title="Say hello to Muse">
+      <span data-muse-slot="header"></span>
+    </button>
     <div class="min-w-0 flex-1">
-      <p data-chat-title class="chat-header-title truncate">SIU Assistant</p>
-      <p data-chat-status class="chat-header-status truncate">Ask about admissions, fees, departments, hostels and more</p>
+      <p data-chat-title class="chat-header-title truncate">Muse — SIU Assistant</p>
+      <p data-chat-status class="chat-header-status truncate" aria-live="polite">Your playful guide to admissions, fees &amp; campus life ✨</p>
     </div>
     <button type="button" data-chat-mode data-chat-mode-toggle title="Change AI mode" aria-label="Change AI mode — open assistant settings" class="chat-mode-badge">Knowledge base</button>
-    <button type="button" data-chat-read title="Read the answer aloud" aria-label="Read the last answer aloud" class="chat-action-btn">
+    <button type="button" data-chat-read title="Hear Muse read the last answer" aria-label="Hear Muse read the last answer" aria-pressed="false" class="chat-action-btn">
       <svg class="h-4 w-4"><use href="#i-volume" /></svg>
     </button>
     <button type="button" data-chat-settings-toggle aria-expanded="false" aria-controls="chat-settings" title="Settings" aria-label="Assistant settings" class="chat-action-btn">

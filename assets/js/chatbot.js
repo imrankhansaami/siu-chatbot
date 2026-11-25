@@ -961,6 +961,30 @@ Rules:
 
   const el = (sel, root = document) => root.querySelector(sel);
 
+  /* Muse is a lightweight inline SVG companion: no image request, canvas or
+     third-party avatar library. State classes on the panel animate her face,
+     antenna, arms and mouth, including lip-sync while speech is active. */
+  function museSVG() {
+    return '<svg class="muse-svg" viewBox="0 0 96 96" aria-hidden="true" focusable="false">' +
+      '<circle class="muse-halo" cx="48" cy="46" r="41" fill="#67e8f9" opacity=".09"/>' +
+      '<g class="muse-sparkles" fill="#fbbf24"><path d="m13 27 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/><path d="m82 19 1.5 3.5L87 24l-3.5 1.5L82 29l-1.5-3.5L77 24l3.5-1.5Z"/></g>' +
+      '<g class="muse-antenna"><path d="M48 22V12" stroke="#a5f3fc" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="9" r="5" fill="#fbbf24"/><circle cx="46.5" cy="7.5" r="1.4" fill="#fff7ed"/></g>' +
+      '<g class="muse-arm muse-arm-left" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"><path d="M28 73Q15 70 16 59"/><circle cx="16" cy="56" r="4" fill="#fbbf24" stroke="none"/></g>' +
+      '<g class="muse-arm muse-arm-right" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"><path d="M68 73Q81 70 80 59"/><circle cx="80" cy="56" r="4" fill="#fbbf24" stroke="none"/></g>' +
+      '<rect x="29" y="68" width="38" height="22" rx="10" fill="#0891b2"/><path d="M38 88v4m20-4v4" stroke="#a5f3fc" stroke-width="5" stroke-linecap="round"/>' +
+      '<rect x="10" y="39" width="9" height="22" rx="4.5" fill="#fbbf24"/><rect x="77" y="39" width="9" height="22" rx="4.5" fill="#fbbf24"/>' +
+      '<rect x="15" y="20" width="66" height="57" rx="23" fill="#38bdf8" stroke="#a5f3fc" stroke-width="2"/>' +
+      '<path d="M24 30q5-7 14-8" fill="none" stroke="#e0f2fe" stroke-width="3" stroke-linecap="round" opacity=".65"/>' +
+      '<rect x="22" y="29" width="52" height="38" rx="15" fill="#10233e"/>' +
+      '<g class="muse-eyes" fill="#a5f3fc"><ellipse class="muse-eye muse-eye-left" cx="35" cy="44" rx="4" ry="5"/><ellipse class="muse-eye muse-eye-right" cx="61" cy="44" rx="4" ry="5"/></g>' +
+      '<g class="muse-brows" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"><path d="m30 36 9 2"/><path d="m57 38 9-2"/></g>' +
+      '<g class="muse-cheeks" fill="#fb7185" opacity=".45"><ellipse cx="29" cy="54" rx="4" ry="2"/><ellipse cx="67" cy="54" rx="4" ry="2"/></g>' +
+      '<path class="muse-mouth" d="M38 54q10 11 20 0" fill="none" stroke="#f0f9ff" stroke-width="2.6" stroke-linecap="round"/>' +
+      '<g class="muse-sound" fill="#fbbf24"><rect x="42" y="73" width="3" height="7" rx="1.5"/><rect x="47" y="70" width="3" height="10" rx="1.5"/><rect x="52" y="73" width="3" height="7" rx="1.5"/></g>' +
+      '<path d="m48 74 1.4 2.8 3.1.5-2.2 2.2.5 3.1-2.8-1.5-2.8 1.5.5-3.1-2.2-2.2 3.1-.5Z" fill="#fef3c7"/>' +
+      '</svg>';
+  }
+
   function boot() {
     const launcher = el("[data-chat-launcher]");
     const panel = el("[data-chat-panel]");
@@ -992,6 +1016,54 @@ Rules:
     let open = false;
     let pageCtx = null;
     let handoffShown = false;
+
+    /* ---------- Muse: playful companion, reactions and opt-in speech ---------- */
+    const museButton = el("[data-muse-button]", panel);
+    document.querySelectorAll("[data-muse-slot]").forEach((slot) => {
+      slot.innerHTML = museSVG();
+    });
+    let museTimer = null;
+    let museQuip = 0;
+    let speechActive = false;
+    const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function setMuse(state = "idle", message = "", hold = 2600) {
+      clearTimeout(museTimer);
+      panel.dataset.museState = state;
+      launcher.dataset.museState = state;
+      statusEl.textContent = message || UI("chatStatus", "Your playful guide to admissions, fees & campus life ✨");
+      if (hold && state !== "thinking" && state !== "talking") {
+        museTimer = setTimeout(() => {
+          if (!busy && !speechActive) setMuse("idle", "", 0);
+        }, hold);
+      }
+    }
+
+    function museCelebrate() {
+      if (!museButton || reduceMotion()) return;
+      const palette = ["#fbbf24", "#67e8f9", "#fb7185", "#a7f3d0"];
+      for (let i = 0; i < 10; i++) {
+        const particle = document.createElement("span");
+        particle.className = "muse-particle";
+        particle.style.setProperty("--mx", `${Math.cos(i * 0.63) * (32 + (i % 3) * 8)}px`);
+        particle.style.setProperty("--my", `${Math.sin(i * 0.63) * (30 + (i % 2) * 10)}px`);
+        particle.style.setProperty("--mc", palette[i % palette.length]);
+        particle.style.animationDelay = `${i * 18}ms`;
+        museButton.appendChild(particle);
+        setTimeout(() => particle.remove(), 950);
+      }
+    }
+
+    function stopMuseSpeech() {
+      speechActive = false;
+      readBtn.classList.remove("is-speaking");
+      readBtn.setAttribute("aria-pressed", "false");
+      readBtn.title = UI("read", "Hear Muse read the last answer");
+      readBtn.setAttribute("aria-label", UI("read", "Hear Muse read the last answer"));
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    }
+
+    setMuse("idle", "", 0);
 
     /* ---------- Three.js globe + Bangladesh flag ---------- */
     let scene, camera, renderer, globe, flag, flagMesh, clock, animationId, stars;
@@ -1343,8 +1415,12 @@ Rules:
         micBtn.title = UI("voice", "Voice input");
         micBtn.setAttribute("aria-label", UI("voice", "Voice input"));
       }
-      readBtn.title = UI("read", "Read the answer aloud");
-      readBtn.setAttribute("aria-label", UI("read", "Read the answer aloud"));
+      readBtn.title = UI(speechActive ? "stopRead" : "read", "Hear Muse read the last answer");
+      readBtn.setAttribute("aria-label", readBtn.title);
+      if (museButton) {
+        museButton.title = UI("museInteract", "Say hello to Muse");
+        museButton.setAttribute("aria-label", museButton.title);
+      }
       toggleSettings.title = UI("settings", "Assistant settings");
       toggleSettings.setAttribute("aria-label", UI("settings", "Assistant settings"));
       clearBtn.title = UI("clearChat", "Clear conversation");
@@ -1439,7 +1515,13 @@ Rules:
         up.classList.add("voted");
         down.classList.add("voted");
         up.disabled = down.disabled = true;
-        if (v === "up") up.classList.add("heartbeat");
+        if (v === "up") {
+          up.classList.add("heartbeat");
+          setMuse("excited", UI("museThanks", "Yes! High-five! You made Muse’s day 🙌"), 3200);
+          museCelebrate();
+        } else {
+          setMuse("confused", UI("museSorry", "Oops! Tell me what I missed — I want to help 💡"), 3600);
+        }
         logFeedback({
           q: (opts.question || "").slice(0, 400),
           vote: v,
@@ -1624,8 +1706,7 @@ Rules:
       if (role !== "user") {
         const av = document.createElement("div");
         av.className = "bot-avatar";
-        av.innerHTML =
-          '<svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>';
+        av.innerHTML = museSVG();
         wrap.appendChild(av);
       }
 
@@ -1682,6 +1763,12 @@ Rules:
       if (role !== "user" && !opts.silent) {
         addFeedback(bubble, opts);
         maybeHandoff(bubble, opts);
+        const uncertain = opts.lowConfidence || /Could not reach|Something went wrong/i.test(text);
+        setMuse(
+          uncertain ? "confused" : "happy",
+          UI(uncertain ? "museConfused" : "museHappy", uncertain ? "Hmm… let’s try another angle! 🤔" : "Ta-da! Hope that helped ✨"),
+          uncertain ? 3200 : 2400
+        );
       }
 
       wrap.appendChild(bubble);
@@ -1702,8 +1789,8 @@ Rules:
       wrap.id = "chat-typing";
       const av = document.createElement("div");
       av.className = "bot-avatar ai-thinking";
-      av.innerHTML =
-        '<svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>';
+      av.innerHTML = museSVG();
+      setMuse("thinking", UI("museThinking", "Muse is thinking… this is exciting! ⚡"), 0);
       const bubble = document.createElement("div");
       bubble.className = "typing-bubble";
       bubble.innerHTML =
@@ -2002,6 +2089,7 @@ Rules:
       launcher.setAttribute("aria-label", open ? UI("closeChatLabel", "Close SIU Assistant") : UI("openChat", "Open SIU Assistant"));
       if (open) {
         pulseLauncher(false);
+        setMuse("excited", UI("museHello", "Hey hey! What are we exploring today? ✨"), 3200);
         initThree();
         if (!scroll.children.length) {
           renderWelcome();
@@ -2015,7 +2103,9 @@ Rules:
         }
         setTimeout(() => input.focus({ preventScroll: true }), 260);
       } else {
+        stopMuseSpeech();
         stopThree();
+        setMuse("idle", "", 0);
       }
     }
 
@@ -2023,8 +2113,8 @@ Rules:
       scroll.querySelector("[data-ai-tip]")?.remove();
       appendMessage(
         "bot",
-        "Hello! 👋 I'm the **SIU Assistant** for *Sylhet International University*.\n\n" +
-          "Ask me about admissions, tuition fees and waivers, departments, hostels, the library, labs, exams or how to contact us — I answer instantly from the university's own information.",
+        "Hey hey! 👋 I'm **Muse**, your playful guide to *Sylhet International University*.\n\n" +
+          "Ask me about admissions, tuition fees and waivers, departments, hostels, the library, labs, exams or how to contact us — I answer instantly from the university's own information. Click my speaker button and I'll read the answer too!",
         []
       );
       renderChips([
@@ -2041,7 +2131,7 @@ Rules:
       const wrap = document.createElement("div");
       wrap.className = "welcome-wrap";
       wrap.innerHTML =
-        '<div class="welcome-icon float"><svg class="h-6 w-6"><use href="#i-chat" /></svg></div>' +
+        '<div class="welcome-icon muse-welcome float">' + museSVG() + '</div>' +
         '<h3 class="welcome-title">' +
         UI("chatTitle", "SIU Assistant") +
         '</h3>' +
@@ -2141,8 +2231,7 @@ Rules:
           liveWrap.className = "flex gap-2.5";
           const av = document.createElement("div");
           av.className = "bot-avatar mt-0.5";
-          av.innerHTML =
-            '<svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>';
+          av.innerHTML = museSVG();
           const b = document.createElement("div");
           b.className = "bubble bubble-bot";
           liveBody = document.createElement("div");
@@ -2168,6 +2257,7 @@ Rules:
           if (liveBubble) addFeedback(liveBubble, fbOpts);
         }
         currentAnswer = clean;
+        if (streamed) setMuse("happy", UI("museHappy", "Ta-da! Hope that helped ✨"), 2400);
         history.push({ role: "assistant", content: clean });
         renderChips(
           offline ? offline.suggestions : retrieved.slice(1, 4).map((r) => r.entry.q[0])
@@ -2259,6 +2349,17 @@ Rules:
       ripple(e.currentTarget);
       setOpen(!open);
     });
+    museButton?.addEventListener("click", () => {
+      museQuip = (museQuip % 4) + 1;
+      const fallback = [
+        "Beep boop! Ready for another question? 🤖",
+        "Fees, programmes, hostels — pick your adventure! 🚀",
+        "You’re doing great! Let’s find your next answer ⭐",
+        "Muse powered up! What shall we discover? ⚡",
+      ][museQuip - 1];
+      setMuse("excited", UI("museQuip" + museQuip, fallback), 2800);
+      if (museQuip === 1 || museQuip === 4) museCelebrate();
+    });
     el("[data-chat-close]", panel)?.addEventListener("click", () => setOpen(false));
     el("[data-chat-context-clear]", panel)?.addEventListener("click", () => setPageContext(null));
 
@@ -2328,10 +2429,14 @@ Rules:
       card.querySelector("[data-tip-close]").addEventListener("click", dismiss);
 
       scroll.appendChild(card);
-      scrollToEnd(false);
+      /* Keep Muse's welcome face in view on short screens; the visitor can
+         scroll down to the optional AI card instead of being jumped past her. */
+      if (!scroll.querySelector(".welcome-wrap")) scrollToEnd(false);
     };
 
     clearBtn.addEventListener("click", () => {
+      stopMuseSpeech();
+      setMuse("happy", UI("museFresh", "Fresh start! What should we explore next? 🌟"), 2400);
       history.length = 0;
       ctx = { lastEntry: null, lastIds: [], lastCat: null, turns: 0 };
       setPageContext(null);
@@ -2348,13 +2453,52 @@ Rules:
     });
 
     readBtn.addEventListener("click", () => {
-      if (!("speechSynthesis" in window)) return;
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(
-        currentAnswer.replace(/\[\[|\]\]|[*#>-]/g, " ").replace(/\s+/g, " ").trim()
-      );
-      u.rate = 1.02;
+      if (speechActive) {
+        stopMuseSpeech();
+        setMuse("idle", "", 0);
+        return;
+      }
+      if (!("speechSynthesis" in window)) {
+        setMuse("confused", UI("museNoSpeech", "Speech is not supported in this browser — but I can still chat! 💬"), 3400);
+        return;
+      }
+      const spoken = currentAnswer.replace(/\[\[|\]\]|[*#>`_-]/g, " ").replace(/\s+/g, " ").trim();
+      if (!spoken) {
+        setMuse("confused", UI("museAskFirst", "Ask me something first — then I’ll say it aloud! 🔊"), 3000);
+        return;
+      }
+      stopMuseSpeech();
+      const u = new SpeechSynthesisUtterance(spoken);
+      u.rate = 1.04;
+      u.pitch = 1.12;
       u.lang = "en-US";
+      const voices = window.speechSynthesis.getVoices();
+      const voice = voices.find((v) => /^en(-|_)/i.test(v.lang) && /female|samantha|zira|aria|jenny/i.test(v.name)) ||
+        voices.find((v) => /^en(-|_)/i.test(v.lang));
+      if (voice) u.voice = voice;
+      speechActive = true;
+      readBtn.classList.add("is-speaking");
+      readBtn.setAttribute("aria-pressed", "true");
+      readBtn.title = UI("stopRead", "Stop Muse");
+      readBtn.setAttribute("aria-label", UI("stopRead", "Stop Muse"));
+      u.onstart = () => {
+        if (speechActive) setMuse("talking", UI("museTalking", "Muse is talking… listen up! 🎧"), 0);
+      };
+      u.onend = () => {
+        if (!speechActive) return;
+        speechActive = false;
+        readBtn.classList.remove("is-speaking");
+        readBtn.setAttribute("aria-pressed", "false");
+        readBtn.title = UI("read", "Hear Muse read the last answer");
+        readBtn.setAttribute("aria-label", UI("read", "Hear Muse read the last answer"));
+        setMuse("happy", UI("museHappy", "Ta-da! Hope that helped ✨"), 2200);
+      };
+      u.onerror = () => {
+        if (!speechActive) return;
+        stopMuseSpeech();
+        setMuse("confused", UI("museNoSpeech", "I couldn’t speak that time — please try again! 💬"), 3000);
+      };
+      setMuse("talking", UI("museTalking", "Muse is talking… listen up! 🎧"), 0);
       window.speechSynthesis.speak(u);
     });
 
@@ -2399,6 +2543,7 @@ Rules:
 
     /* language switch: repaint everything the assistant owns */
     window.addEventListener("siu:langchange", () => {
+      setMuse("idle", "", 0);
       paintChrome();
       localize(scroll);
       const next = chips.querySelector("[data-chat-next]");
@@ -2407,7 +2552,7 @@ Rules:
       const welcome = scroll.querySelector(".welcome-wrap");
       if (welcome) {
         welcome.innerHTML =
-          '<div class="welcome-icon"><svg class="h-6 w-6"><use href="#i-chat" /></svg></div>' +
+          '<div class="welcome-icon muse-welcome">' + museSVG() + '</div>' +
           '<h3 class="welcome-title">' +
           UI("chatTitle", "SIU Assistant") +
           '</h3>' +
@@ -2421,6 +2566,7 @@ Rules:
     });
 
     window.addEventListener("resize", resizeThree);
+    window.addEventListener("pagehide", stopMuseSpeech);
 
     // expose a tiny public API
     window.SIUAssistant = {

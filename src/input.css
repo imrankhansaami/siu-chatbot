@@ -886,6 +886,142 @@
     @apply text-sm text-slate-400 leading-relaxed max-w-[220px] px-2;
   }
 
+  /* ---------- Muse: animated robot companion ---------- */
+  .muse-svg {
+    display: block;
+    overflow: visible;
+    transform-origin: center;
+    transition: transform 0.25s ease;
+  }
+  .muse-launcher-bot {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    animation: museFloat 3.2s ease-in-out infinite;
+  }
+  .chat-launcher .muse-svg {
+    width: 56px;
+    height: 56px;
+    filter: drop-shadow(0 4px 7px rgba(0, 0, 0, 0.22));
+  }
+  .muse-launcher-label {
+    position: absolute;
+    right: calc(100% + 10px);
+    top: 50%;
+    transform: translate(6px, -50%);
+    padding: 7px 11px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.94);
+    color: #f8fafc;
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.24);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .muse-launcher-label span { color: #fbbf24; }
+  .chat-launcher:hover .muse-launcher-label,
+  .chat-launcher:focus-visible .muse-launcher-label {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+  .muse-header {
+    position: relative;
+    overflow: visible;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.12) !important;
+    cursor: pointer;
+  }
+  .muse-header .muse-svg { width: 43px; height: 43px; }
+  .muse-header:hover .muse-svg { transform: rotate(-5deg) scale(1.12); }
+  .muse-header:focus-visible { outline: 2px solid #fbbf24; outline-offset: 3px; }
+  .chat-panel header { gap: 8px !important; padding-inline: 16px !important; }
+  .chat-panel header .chat-action-btn { width: 36px; height: 36px; border-radius: 10px; }
+  .chat-panel header .chat-mode-badge { padding-inline: 8px; }
+  @media (max-width: 420px) {
+    .chat-panel header { gap: 4px !important; padding-inline: 8px !important; }
+    .chat-panel header .chat-mode-badge { display: none; }
+    .chat-panel header .chat-action-btn { width: 33px; height: 33px; }
+    .muse-header .muse-svg { width: 39px; height: 39px; }
+  }
+  .bot-avatar > .muse-svg { width: 42px; height: 42px; }
+  .muse-welcome {
+    width: 112px;
+    height: 108px;
+    border-radius: 32px;
+    background: radial-gradient(circle at 50% 35%, rgba(103, 232, 249, 0.2), rgba(8, 145, 178, 0.06));
+    border: 1px solid rgba(103, 232, 249, 0.16);
+  }
+  .muse-welcome .muse-svg { width: 104px; height: 104px; }
+  .muse-eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: museBlink 5s infinite;
+  }
+  .muse-brows { opacity: 0; transition: opacity 0.2s ease; }
+  .muse-sound { opacity: 0; }
+  .muse-mouth, .muse-cheeks, .muse-arm, .muse-antenna, .muse-sparkles {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  [data-muse-state="thinking"] .muse-svg { animation: museThink 0.9s ease-in-out infinite; }
+  [data-muse-state="thinking"] .muse-eye-left { transform: translateX(2px); }
+  [data-muse-state="thinking"] .muse-eye-right { transform: translateX(-2px); }
+  [data-muse-state="thinking"] .muse-antenna { animation: museAntenna 0.7s ease-in-out infinite alternate; }
+  [data-muse-state="happy"] .muse-mouth { transform: scale(1.18); }
+  [data-muse-state="happy"] .muse-cheeks,
+  [data-muse-state="excited"] .muse-cheeks { opacity: 0.9; }
+  [data-muse-state="excited"] .muse-svg { animation: museExcited 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 2; }
+  [data-muse-state="excited"] .muse-arm-left { animation: museWaveLeft 0.65s ease-in-out 3; transform-origin: top right; }
+  [data-muse-state="excited"] .muse-arm-right { animation: museWaveRight 0.65s ease-in-out 3; transform-origin: top left; }
+  [data-muse-state="excited"] .muse-sparkles { animation: museSparkle 0.7s ease-in-out infinite alternate; }
+  [data-muse-state="confused"] .muse-brows { opacity: 1; }
+  [data-muse-state="confused"] .muse-mouth { transform: rotate(180deg) scale(0.72); }
+  [data-muse-state="confused"] .muse-svg { transform: rotate(3deg); }
+  [data-muse-state="talking"] .muse-mouth { animation: museTalk 0.24s ease-in-out infinite alternate; }
+  [data-muse-state="talking"] .muse-sound { opacity: 1; animation: museSound 0.35s ease-in-out infinite alternate; }
+  [data-muse-state="talking"] .muse-antenna { animation: museAntenna 0.5s ease-in-out infinite alternate; }
+  .chat-action-btn.is-speaking {
+    color: #10233e;
+    background: #fbbf24;
+    box-shadow: 0 0 0 5px rgba(251, 191, 36, 0.14);
+    animation: museSpeaker 1s ease-in-out infinite;
+  }
+  .muse-particle {
+    position: absolute;
+    z-index: 20;
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    background: var(--mc);
+    pointer-events: none;
+    animation: museConfetti 0.85s cubic-bezier(0.15, 0.7, 0.25, 1) forwards;
+  }
+  @keyframes museFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+  @keyframes museBlink { 0%, 44%, 48%, 100% { transform: scaleY(1); } 46% { transform: scaleY(0.08); } }
+  @keyframes museThink { 0%, 100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-2px); } }
+  @keyframes museAntenna { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+  @keyframes museExcited { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.06); } }
+  @keyframes museWaveLeft { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(24deg); } }
+  @keyframes museWaveRight { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-24deg); } }
+  @keyframes museSparkle { from { opacity: 0.35; transform: scale(0.8) rotate(-8deg); } to { opacity: 1; transform: scale(1.15) rotate(8deg); } }
+  @keyframes museTalk { from { transform: scaleY(0.25) scaleX(1.12); } to { transform: scaleY(1.25) scaleX(0.92); } }
+  @keyframes museSound { from { transform: scaleY(0.6); } to { transform: scaleY(1.3); } }
+  @keyframes museSpeaker { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  @keyframes museConfetti {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(0.6) rotate(220deg); }
+  }
+
   /* ---------- Forms ---------- */
   .field {
     @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800
