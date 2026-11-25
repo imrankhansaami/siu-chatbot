@@ -961,7 +961,7 @@ Rules:
 
   const el = (sel, root = document) => root.querySelector(sel);
 
-  /* Muse is a lightweight inline SVG companion: no image request, canvas or
+  /* The robot is a lightweight inline SVG companion: no image request, canvas or
      third-party avatar library. State classes on the panel animate her face,
      antenna, arms and mouth, including lip-sync while speech is active. */
   function museSVG() {
@@ -1017,7 +1017,7 @@ Rules:
     let pageCtx = null;
     let handoffShown = false;
 
-    /* ---------- Muse: playful companion, reactions and opt-in speech ---------- */
+    /* ---------- Robot companion, reactions and opt-in speech ---------- */
     const museButton = el("[data-muse-button]", panel);
     document.querySelectorAll("[data-muse-slot]").forEach((slot) => {
       slot.innerHTML = museSVG();
@@ -1058,8 +1058,8 @@ Rules:
       speechActive = false;
       readBtn.classList.remove("is-speaking");
       readBtn.setAttribute("aria-pressed", "false");
-      readBtn.title = UI("read", "Hear Muse read the last answer");
-      readBtn.setAttribute("aria-label", UI("read", "Hear Muse read the last answer"));
+      readBtn.title = UI("read", "Read the last answer aloud");
+      readBtn.setAttribute("aria-label", UI("read", "Read the last answer aloud"));
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
     }
 
@@ -1415,10 +1415,10 @@ Rules:
         micBtn.title = UI("voice", "Voice input");
         micBtn.setAttribute("aria-label", UI("voice", "Voice input"));
       }
-      readBtn.title = UI(speechActive ? "stopRead" : "read", "Hear Muse read the last answer");
+      readBtn.title = UI(speechActive ? "stopRead" : "read", "Read the last answer aloud");
       readBtn.setAttribute("aria-label", readBtn.title);
       if (museButton) {
-        museButton.title = UI("museInteract", "Say hello to Muse");
+        museButton.title = UI("museInteract", "Say hello to the assistant");
         museButton.setAttribute("aria-label", museButton.title);
       }
       toggleSettings.title = UI("settings", "Assistant settings");
@@ -1517,7 +1517,7 @@ Rules:
         up.disabled = down.disabled = true;
         if (v === "up") {
           up.classList.add("heartbeat");
-          setMuse("excited", UI("museThanks", "Yes! High-five! You made Muse’s day 🙌"), 3200);
+          setMuse("excited", UI("museThanks", "Yes! High-five! You made my day 🙌"), 3200);
           museCelebrate();
         } else {
           setMuse("confused", UI("museSorry", "Oops! Tell me what I missed — I want to help 💡"), 3600);
@@ -1790,7 +1790,7 @@ Rules:
       const av = document.createElement("div");
       av.className = "bot-avatar ai-thinking";
       av.innerHTML = museSVG();
-      setMuse("thinking", UI("museThinking", "Muse is thinking… this is exciting! ⚡"), 0);
+      setMuse("thinking", UI("museThinking", "Thinking… this is exciting! ⚡"), 0);
       const bubble = document.createElement("div");
       bubble.className = "typing-bubble";
       bubble.innerHTML =
@@ -2113,7 +2113,7 @@ Rules:
       scroll.querySelector("[data-ai-tip]")?.remove();
       appendMessage(
         "bot",
-        "Hey hey! 👋 I'm **Muse**, your playful guide to *Sylhet International University*.\n\n" +
+        "Hey hey! 👋 I'm your playful **SIU guide** to *Sylhet International University*.\n\n" +
           "Ask me about admissions, tuition fees and waivers, departments, hostels, the library, labs, exams or how to contact us — I answer instantly from the university's own information. Click my speaker button and I'll read the answer too!",
         []
       );
@@ -2355,7 +2355,7 @@ Rules:
         "Beep boop! Ready for another question? 🤖",
         "Fees, programmes, hostels — pick your adventure! 🚀",
         "You’re doing great! Let’s find your next answer ⭐",
-        "Muse powered up! What shall we discover? ⚡",
+        "Powered up! What shall we discover? ⚡",
       ][museQuip - 1];
       setMuse("excited", UI("museQuip" + museQuip, fallback), 2800);
       if (museQuip === 1 || museQuip === 4) museCelebrate();
@@ -2429,7 +2429,7 @@ Rules:
       card.querySelector("[data-tip-close]").addEventListener("click", dismiss);
 
       scroll.appendChild(card);
-      /* Keep Muse's welcome face in view on short screens; the visitor can
+      /* Keep the robot's welcome face in view on short screens; the visitor can
          scroll down to the optional AI card instead of being jumped past her. */
       if (!scroll.querySelector(".welcome-wrap")) scrollToEnd(false);
     };
@@ -2479,18 +2479,18 @@ Rules:
       speechActive = true;
       readBtn.classList.add("is-speaking");
       readBtn.setAttribute("aria-pressed", "true");
-      readBtn.title = UI("stopRead", "Stop Muse");
-      readBtn.setAttribute("aria-label", UI("stopRead", "Stop Muse"));
+      readBtn.title = UI("stopRead", "Stop reading");
+      readBtn.setAttribute("aria-label", UI("stopRead", "Stop reading"));
       u.onstart = () => {
-        if (speechActive) setMuse("talking", UI("museTalking", "Muse is talking… listen up! 🎧"), 0);
+        if (speechActive) setMuse("talking", UI("museTalking", "Reading aloud… listen up! 🎧"), 0);
       };
       u.onend = () => {
         if (!speechActive) return;
         speechActive = false;
         readBtn.classList.remove("is-speaking");
         readBtn.setAttribute("aria-pressed", "false");
-        readBtn.title = UI("read", "Hear Muse read the last answer");
-        readBtn.setAttribute("aria-label", UI("read", "Hear Muse read the last answer"));
+        readBtn.title = UI("read", "Read the last answer aloud");
+        readBtn.setAttribute("aria-label", UI("read", "Read the last answer aloud"));
         setMuse("happy", UI("museHappy", "Ta-da! Hope that helped ✨"), 2200);
       };
       u.onerror = () => {
@@ -2498,7 +2498,7 @@ Rules:
         stopMuseSpeech();
         setMuse("confused", UI("museNoSpeech", "I couldn’t speak that time — please try again! 💬"), 3000);
       };
-      setMuse("talking", UI("museTalking", "Muse is talking… listen up! 🎧"), 0);
+      setMuse("talking", UI("museTalking", "Reading aloud… listen up! 🎧"), 0);
       window.speechSynthesis.speak(u);
     });
 

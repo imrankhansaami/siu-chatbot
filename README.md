@@ -193,27 +193,27 @@ The assistant panel got a full visual refresh:
 - **Interactive effects** — click ripples on all buttons, pressed-scale on chips and send button, glow-on-focus on input, lift-on-hover on source pills, heartbeat on upvote, burst on "Thanks", shake on validation errors, and slide-up/slide-down transitions for cards and context pills.
 - **Three.js background** — animated Earth globe with real continent shapes, 23.5° axial tilt, atmosphere glow, starfield, and city markers (including Sylhet where SIU is located), plus a waving Bangladesh flag. Powered by Three.js on a canvas behind the chat panel (left side). Starts when the panel opens and pauses when it closes.
 
-### 7. Muse — playful talking companion
+### 7. Playful talking robot companion
 
-Muse is a lightweight inline-SVG robot built into the launcher, header, welcome
-state and message avatars. No avatar images, external avatar service or extra
-JavaScript library is required.
+The assistant includes a lightweight inline-SVG robot in the launcher, header,
+welcome state and message avatars. No avatar images, external avatar service or
+extra JavaScript library is required.
 
 - **Expressions and reactions** — idle blinking, thinking, happy, confused,
-  excited and talking states. Muse reacts when the chat opens, while an answer
-  is being prepared, after answers, and to positive or negative feedback.
-- **Playful interaction** — click Muse in the header for rotating quips;
+  excited and talking states. The robot reacts when the chat opens, while an
+  answer is being prepared, after answers, and to positive or negative feedback.
+- **Playful interaction** — click the robot in the header for rotating quips;
   positive feedback and selected quips trigger a small confetti celebration.
 - **Opt-in speech only** — the header speaker button reads the latest answer
-  with the browser's `speechSynthesis`; nothing plays automatically. Muse's
+  with the browser's `speechSynthesis`; nothing plays automatically. The robot's
   mouth and sound bars animate while speaking. Press the button again to stop.
   Closing or clearing the chat also stops speech.
 - **Accessible by default** — labelled controls, `aria-pressed` speech state,
   keyboard focus styles, and `prefers-reduced-motion` support. Reduced-motion
   mode disables the animation loop and confetti.
-- **Bangla-aware chrome** — Muse's title, default status, reactions, quips and
-  speech controls use the existing `i18n.js` key system. Knowledge-base answers
-  remain in English as before.
+- **Bangla-aware chrome** — the assistant title, default status, reactions,
+  quips and speech controls use the existing `i18n.js` key system.
+  Knowledge-base answers remain in English as before.
 
 ## Content
 
