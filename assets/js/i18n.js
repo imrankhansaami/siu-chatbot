@@ -308,11 +308,23 @@
       "ঐচ্ছিক। কী ছাড়াও সহায়ক তার বিল্ট-ইন SIU নলেজ বেস থেকে সব উত্তর দিতে পারে।",
     ],
     apiKey: ["API key", "API কী"],
+    saveKey: ["Save key", "কী সংরক্ষণ করুন"],
+    keySaved: ["Saved ✓", "সংরক্ষিত ✓"],
+    keyEmpty: ["Paste your API key first.", "আগে আপনার API কী দিন।"],
+    keyInvalid: [
+      "That does not look like an OpenRouter key (sk-or-v1-…).",
+      "এটি OpenRouter কী-এর মতো দেখাচ্ছে না (sk-or-v1-…)।",
+    ],
+    museKeySaved: ["Key saved! Ask me anything ✨", "কী সংরক্ষিত! যা জানতে চান জিজ্ঞাসা করুন ✨"],
     apiKeyHint: [
       "Kept only in this browser's localStorage. Never sent anywhere except the provider you chose.",
       "শুধু এই ব্রাউজারের localStorage-এ রাখা হয়। আপনি যে প্রোভাইডার বেছেছেন, সেখানেই কেবল পাঠানো হয়।",
     ],
     model: ["Model", "মডেল"],
+    modelHint: [
+      "Leave blank for the default. Free models end in :free, and a busy one is retried with a fallback model.",
+      "ফাঁকা রাখলে ডিফল্ট মডেল ব্যবহার হবে। ফ্রি মডেলের নাম :free-এ শেষ হয়, ব্যস্ত থাকলে বিকল্প মডেলে চেষ্টা করা হয়।",
+    ],
     baseUrl: ["Base URL", "বেস URL"],
     removeKey: ["Remove key & go back to offline mode", "কী মুছে অফলাইন মোডে ফিরুন"],
     privacyNote: [

@@ -104,8 +104,10 @@ The assistant runs on the offline knowledge base by default. To upgrade it:
 1. Click the assistant bubble (bottom-right). A one-time **"Optional: add
    your own AI"** card appears — click **Enable AI**. (You can also click the
    **"Knowledge base"** badge in the chat header, or the gear icon.)
-2. Pick a provider and paste your API key. The key is stored only in your
-   browser's `localStorage` and is sent only to the provider you chose.
+2. Pick a provider and paste your API key, then press **Save key** — the panel
+   confirms with **Saved ✓** and the header badge switches to `AI · <provider>`.
+   The key also autosaves as you type. It is stored only in your browser's
+   `localStorage` and is sent only to the provider you chose.
 
 **Which providers work from this static page**
 
@@ -113,7 +115,7 @@ The assistant runs on the offline knowledge base by default. To upgrade it:
 | --- | --- | --- |
 | Google Gemini | ✅ recommended | Free API key works instantly; key passed in the request URL |
 | Groq | ✅ | Free tier, very fast, allows browser access |
-| OpenRouter | ✅ | **Defaults to a free model** (`…:free`), so any key works out of the box |
+| OpenRouter | ✅ | Any key works; defaults to a **free** model (`…:free`) and retries other free models when one is busy |
 | OpenAI | ❌ | **OpenAI's API blocks direct browser requests (CORS)** — an OpenAI key cannot work here |
 | Custom (OpenAI-compatible) | ⚠️ | Depends on that server's CORS config (Ollama, LM Studio, VLLM…) |
 
@@ -121,11 +123,31 @@ The settings panel shows a one-line hint per provider, warns you when you
 pick OpenAI, and any failed request shows the real reason in the chat
 (e.g. `401 — Invalid API Key`).
 
-**Why did my OpenRouter key "not work"?** OpenRouter's default model was
-previously a *paid* model (`openai/gpt-4o-mini`), which needs account
-credits — a free-tier key gets a quota error. It now defaults to a **free**
-model, so it works with any key. If you prefer a paid model, type its ID
-(e.g. `openai/gpt-4o-mini`) into the Model field.
+**Why did my OpenRouter key "not work"?** Three different causes look alike
+in the chat panel:
+
+1. **A busy free model.** Every `:free` OpenRouter model shares one capacity
+   pool, so a single model can answer `429 Provider returned error` at any
+   moment. The assistant now tries the default model first and then the other
+   free models in `PROVIDERS.openrouter.fallbacks`, and skips a model for a
+   minute after it fails. If the message still says the free models are busy,
+   wait a little and ask again, or add credit to the OpenRouter account (free
+   limits are per account, not per key).
+2. **An old paid default.** The default model used to be a *paid* model
+   (`openai/gpt-4o-mini`); a free-tier key then gets a quota error. Leave the
+   Model field blank to use the current free default, or type any model ID.
+3. **A stale `:free` model ID.** OpenRouter occasionally drops a free model;
+   the API then answers `400 … is not a valid model ID`. That case is also
+   retried with the fallback models, and the reason is printed in the chat.
+
+**Which free model should I use?** Leave the Model field blank to get the
+default, `baidu/ernie-5.5-flash-preview:free`. It was measured on real SIU
+questions (fees, hostels) as the fastest correct answerer (~1.4–3 s), followed
+by `nvidia/nemotron-3.5-super-vl:free`, `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`
+and `nvidia/nemotron-3-ultra-550b-a55b:free`. `google/gemma-4-26b-a4b-it:free`
+was frequently rate-limited, so it is no longer the default. Free limits are per
+OpenRouter account: a one-time $10 credit raises the daily free-request cap and
+removes most `429` errors.
 
 ## Assistant upgrades
 
